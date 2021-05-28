@@ -1,5 +1,7 @@
 using HotelListing.Configurations;
 using HotelListing.Data;
+using HotelListing.IRepository;
+using HotelListing.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -42,11 +44,12 @@ namespace HotelListing
                     .AllowAnyHeader());
             });
             services.AddAutoMapper(typeof(Mapperinitializer));
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "HotelListing", Version = "v1" });
             });
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(op => op.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
         }
 
@@ -69,6 +72,10 @@ namespace HotelListing
 
             app.UseEndpoints(endpoints =>
             {
+                //endpoints.MapControllerRoute(
+                   // name: "default",
+                   // pattern: "{controller=Home}/{action=Index}/{id?}"
+                   // );
                 endpoints.MapControllers();
             });
         }
